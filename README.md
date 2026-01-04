@@ -6,7 +6,7 @@
 **A Python library that provides a high-level, leafmap-like API for working with PyQGIS**
 
 - Free software: MIT License
-- Documentation: https://opengeos.org/qgis-map
+- Documentation: https://qgis-map.gishub.org
 
 ## Features
 
@@ -203,7 +203,7 @@ dock = m.create_dock_widget("My Panel", widget, position="right")
 
 ## API Reference
 
-See the full [API documentation](https://opengeos.org/qgis-map/qgis_map/) for detailed information about all available methods.
+See the full [API documentation](https://qgis-map.gishub.org/qgis_map/) for detailed information about all available methods.
 
 ## Credits
 
