@@ -78,7 +78,7 @@ Ready to contribute? Here's how to set up qgis-map for local development.
     and the tests, including testing other Python versions with tox:
 
     ```shell
-    $ flake8 qgis-map tests
+    $ flake8 qgis_map tests
     $ python setup.py test or pytest
     $ tox
     ```
