@@ -1,8 +1,8 @@
 site_name: qgis-map
 site_description: a Python library that provides a high-level, leafmap-like API for working with PyQGIS
 site_author: giswqs
-site_url: https://giswqs.github.io/qgis-map
-repo_url: https://github.com/giswqs/qgis-map
+site_url: https://opengeos.org/qgis-map
+repo_url: https://github.com/opengeos/qgis-map
 
 copyright: "Copyright &copy; 2026 Qiusheng Wu"
 
