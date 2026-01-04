@@ -729,6 +729,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#qgis_map.qgis_map.Map.add_colorbar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add_colorbar()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#qgis_map.qgis_map.Map.add_gdf" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -744,6 +755,17 @@
     <span class="md-ellipsis">
       
         add_layer_control()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qgis_map.qgis_map.Map.add_legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add_legend()
       
     </span>
   </a>
@@ -1047,6 +1069,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#qgis_map.qgis_map.Map.add_colorbar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add_colorbar()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#qgis_map.qgis_map.Map.add_gdf" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1062,6 +1095,17 @@
     <span class="md-ellipsis">
       
         add_layer_control()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qgis_map.qgis_map.Map.add_legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add_legend()
       
     </span>
   </a>
@@ -2380,6 +2424,369 @@ creating interactive dockable panels.</p>
 
         <span class="k">return</span> <span class="n">output_path</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_legend</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Legend&quot;</span><span class="p">,</span>
+        <span class="n">legend_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bottomright&quot;</span><span class="p">,</span>
+        <span class="n">layer_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;QDockWidget&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a legend to the map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title: Title of the legend. Defaults to &quot;Legend&quot;.</span>
+<span class="sd">            legend_dict: A dictionary containing legend items as keys and colors as values.</span>
+<span class="sd">                If provided, labels and colors will be ignored.</span>
+<span class="sd">            labels: A list of legend labels.</span>
+<span class="sd">            colors: A list of legend colors (hex strings, RGB tuples, or color names).</span>
+<span class="sd">            position: Position of the legend (&quot;topleft&quot;, &quot;topright&quot;, &quot;bottomleft&quot;, &quot;bottomright&quot;).</span>
+<span class="sd">                Defaults to &quot;bottomright&quot;.</span>
+<span class="sd">            layer_name: Layer name to associate the legend with. Defaults to None.</span>
+<span class="sd">            **kwargs: Additional keyword arguments (e.g., width, height).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The created QDockWidget, or None if failed.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; m = Map()</span>
+<span class="sd">            &gt;&gt;&gt; m.add_legend(</span>
+<span class="sd">            ...     title=&quot;Land Cover&quot;,</span>
+<span class="sd">            ...     labels=[&quot;Forest&quot;, &quot;Water&quot;, &quot;Urban&quot;],</span>
+<span class="sd">            ...     colors=[&quot;#228B22&quot;, &quot;#4169E1&quot;, &quot;#DC143C&quot;]</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; # Or using a dictionary</span>
+<span class="sd">            &gt;&gt;&gt; m.add_legend(</span>
+<span class="sd">            ...     legend_dict={&quot;Forest&quot;: &quot;#228B22&quot;, &quot;Water&quot;: &quot;#4169E1&quot;, &quot;Urban&quot;: &quot;#DC143C&quot;}</span>
+<span class="sd">            ... )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_PYQT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyQt5 is required for legend functionality.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Legend requires running within QGIS.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Process legend_dict</span>
+        <span class="k">if</span> <span class="n">legend_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">legend_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The legend_dict must be a dictionary.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">legend_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">legend_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="c1"># Validate labels and colors</span>
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;One&quot;</span><span class="p">,</span> <span class="s2">&quot;Two&quot;</span><span class="p">,</span> <span class="s2">&quot;Three&quot;</span><span class="p">,</span> <span class="s2">&quot;Four&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#8DD3C7&quot;</span><span class="p">,</span> <span class="s2">&quot;#FFFFB3&quot;</span><span class="p">,</span> <span class="s2">&quot;#BEBADA&quot;</span><span class="p">,</span> <span class="s2">&quot;#FB8072&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The labels must be a list.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The colors must be a list.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Convert RGB tuples to hex if needed</span>
+        <span class="n">converted_colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;#</span><span class="si">{:02x}{:02x}{:02x}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;#</span><span class="si">{:02x}{:02x}{:02x}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid color tuple: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># Handle colors without # prefix</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">color</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                    <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">color</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid color type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">color</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="n">converted_colors</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The labels and colors must be the same length.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Validate position</span>
+        <span class="n">allowed_positions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;topleft&quot;</span><span class="p">,</span> <span class="s2">&quot;topright&quot;</span><span class="p">,</span> <span class="s2">&quot;bottomleft&quot;</span><span class="p">,</span> <span class="s2">&quot;bottomright&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_positions</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The position must be one of: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">allowed_positions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Create the dock widget</span>
+        <span class="n">dock</span> <span class="o">=</span> <span class="n">QDockWidget</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">mainWindow</span><span class="p">())</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">LegendDock&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create the main widget with scroll area</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QScrollArea</span>
+
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">main_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Add legend items</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+            <span class="n">item_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+            <span class="c1"># Color box</span>
+            <span class="n">color_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+            <span class="n">color_label</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="n">color_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;background-color: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">; border: 1px solid #000000;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Label text</span>
+            <span class="n">text_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+            <span class="n">item_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">color_label</span><span class="p">)</span>
+            <span class="n">item_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">text_label</span><span class="p">)</span>
+            <span class="n">item_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+            <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">item_layout</span><span class="p">)</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">main_widget</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">scroll</span><span class="p">)</span>
+
+        <span class="c1"># Set size constraints if provided</span>
+        <span class="k">if</span> <span class="s2">&quot;width&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;height&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Determine dock area</span>
+        <span class="n">dock_areas</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;topleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+            <span class="s2">&quot;topright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+            <span class="s2">&quot;bottomleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+            <span class="s2">&quot;bottomright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">dock_areas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">dock</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dock</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_colorbar</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]],</span>
+        <span class="n">vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">categorical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bottomright&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;QDockWidget&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a colorbar to the map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colors: The set of colors for interpolation. Can be:</span>
+<span class="sd">                - List of hex strings (e.g., [&quot;#ff0000&quot;, &quot;#00ff00&quot;, &quot;#0000ff&quot;])</span>
+<span class="sd">                - List of RGB tuples (e.g., [(255, 0, 0), (0, 255, 0), (0, 0, 255)])</span>
+<span class="sd">                - List of color names (e.g., [&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;])</span>
+<span class="sd">            vmin: The minimum value for the colormap. Defaults to 0.</span>
+<span class="sd">            vmax: The maximum value for the colormap. Defaults to 1.0.</span>
+<span class="sd">            index: The values corresponding to each color. Must be sorted and same length as colors.</span>
+<span class="sd">                If None, a regular grid between vmin and vmax is created.</span>
+<span class="sd">            caption: The caption/title for the colorbar. Defaults to &quot;&quot;.</span>
+<span class="sd">            categorical: Whether to create a categorical (discrete) colorbar. Defaults to False.</span>
+<span class="sd">            step: The number of steps for categorical colorbar. Defaults to None.</span>
+<span class="sd">            width: The width of the colorbar widget in pixels. Defaults to 300.</span>
+<span class="sd">            height: The height of the colorbar widget in pixels. Defaults to 60.</span>
+<span class="sd">            position: Position of the colorbar (&quot;topleft&quot;, &quot;topright&quot;, &quot;bottomleft&quot;, &quot;bottomright&quot;).</span>
+<span class="sd">                Defaults to &quot;bottomright&quot;.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The created QDockWidget, or None if failed.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; m = Map()</span>
+<span class="sd">            &gt;&gt;&gt; m.add_colorbar(</span>
+<span class="sd">            ...     colors=[&quot;blue&quot;, &quot;cyan&quot;, &quot;yellow&quot;, &quot;red&quot;],</span>
+<span class="sd">            ...     vmin=0,</span>
+<span class="sd">            ...     vmax=100,</span>
+<span class="sd">            ...     caption=&quot;Temperature (°C)&quot;</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; # Categorical colorbar</span>
+<span class="sd">            &gt;&gt;&gt; m.add_colorbar(</span>
+<span class="sd">            ...     colors=[&quot;#00ff00&quot;, &quot;#ffff00&quot;, &quot;#ff0000&quot;],</span>
+<span class="sd">            ...     vmin=0,</span>
+<span class="sd">            ...     vmax=1,</span>
+<span class="sd">            ...     categorical=True,</span>
+<span class="sd">            ...     caption=&quot;Risk Level&quot;</span>
+<span class="sd">            ... )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_PYQT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyQt5 is required for colorbar functionality.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Colorbar requires running within QGIS.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QScrollArea</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QLinearGradient</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QRectF</span>
+
+        <span class="c1"># Convert colors to QColor</span>
+        <span class="n">qcolors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">QColor</span><span class="p">(</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">color</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                    <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">color</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid color type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">color</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Create index if not provided</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">vmin</span> <span class="o">+</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">))</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The index and colors must be the same length.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Create the dock widget</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">caption</span> <span class="k">if</span> <span class="n">caption</span> <span class="k">else</span> <span class="s2">&quot;Colorbar&quot;</span>
+        <span class="n">dock</span> <span class="o">=</span> <span class="n">QDockWidget</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">mainWindow</span><span class="p">())</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">ColorbarDock&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create the main widget</span>
+        <span class="n">main_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create colorbar as a pixmap and display in QLabel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPixmap</span><span class="p">,</span> <span class="n">QImage</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span> <span class="k">as</span> <span class="n">QtCore</span>
+
+        <span class="c1"># Create the colorbar image</span>
+        <span class="n">bar_height</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QPixmap</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">)</span>
+        <span class="n">pixmap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">transparent</span><span class="p">)</span>
+
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">categorical</span> <span class="ow">and</span> <span class="n">step</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Draw discrete color segments</span>
+            <span class="n">segment_width</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="n">step</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">color_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">color_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">color_idx</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">painter</span><span class="o">.</span><span class="n">fillRect</span><span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">segment_width</span><span class="p">),</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">segment_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">bar_height</span><span class="p">,</span>
+                    <span class="n">qcolors</span><span class="p">[</span><span class="n">color_idx</span><span class="p">],</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Draw continuous gradient</span>
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">QLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">qcolors</span><span class="p">):</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">qcolors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">qcolors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">fillRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">,</span> <span class="n">gradient</span><span class="p">)</span>
+
+        <span class="c1"># Draw border</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#000000&quot;</span><span class="p">))</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bar_height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+
+        <span class="c1"># Create label with the colorbar pixmap</span>
+        <span class="n">colorbar_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="n">colorbar_label</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+        <span class="n">colorbar_label</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">)</span>
+        <span class="n">colorbar_label</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">colorbar_label</span><span class="p">)</span>
+
+        <span class="c1"># Add value labels</span>
+        <span class="n">labels_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">vmin_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">vmax_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">labels_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">vmin_label</span><span class="p">)</span>
+        <span class="n">labels_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">labels_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">vmax_label</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">labels_layout</span><span class="p">)</span>
+
+        <span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">main_widget</span><span class="p">)</span>
+
+        <span class="c1"># Set size constraints instead of fixed size</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="n">width</span> <span class="o">+</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">(</span><span class="n">width</span> <span class="o">+</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">height</span> <span class="o">+</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMaximumHeight</span><span class="p">(</span><span class="n">height</span> <span class="o">+</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="c1"># Determine dock area</span>
+        <span class="n">dock_areas</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;topleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+            <span class="s2">&quot;topright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+            <span class="s2">&quot;bottomleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+            <span class="s2">&quot;bottomright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">dock_areas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">dock</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dock</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">create_dock_widget</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2941,6 +3348,340 @@ Use get_basemap_names() to see all available basemaps.</p></td>
 
 
 
+<h3 id="qgis_map.qgis_map.Map.add_colorbar" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_colorbar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;bottomright&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#qgis_map.qgis_map.Map.add_colorbar" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Add a colorbar to the map.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>colors</code></td>
+        <td><code>List[Union[str, Tuple]]</code></td>
+        <td><p>The set of colors for interpolation. Can be:
+- List of hex strings (e.g., ["#ff0000", "#00ff00", "#0000ff"])
+- List of RGB tuples (e.g., [(255, 0, 0), (0, 255, 0), (0, 0, 255)])
+- List of color names (e.g., ["red", "green", "blue"])</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>vmin</code></td>
+        <td><code>float</code></td>
+        <td><p>The minimum value for the colormap. Defaults to 0.</p></td>
+        <td><code>0</code></td>
+      </tr>
+      <tr>
+        <td><code>vmax</code></td>
+        <td><code>float</code></td>
+        <td><p>The maximum value for the colormap. Defaults to 1.0.</p></td>
+        <td><code>1.0</code></td>
+      </tr>
+      <tr>
+        <td><code>index</code></td>
+        <td><code>Optional[List[float]]</code></td>
+        <td><p>The values corresponding to each color. Must be sorted and same length as colors.
+If None, a regular grid between vmin and vmax is created.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>caption</code></td>
+        <td><code>str</code></td>
+        <td><p>The caption/title for the colorbar. Defaults to "".</p></td>
+        <td><code>&#39;&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>categorical</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to create a categorical (discrete) colorbar. Defaults to False.</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
+        <td><code>step</code></td>
+        <td><code>Optional[int]</code></td>
+        <td><p>The number of steps for categorical colorbar. Defaults to None.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td><code>int</code></td>
+        <td><p>The width of the colorbar widget in pixels. Defaults to 300.</p></td>
+        <td><code>300</code></td>
+      </tr>
+      <tr>
+        <td><code>height</code></td>
+        <td><code>int</code></td>
+        <td><p>The height of the colorbar widget in pixels. Defaults to 60.</p></td>
+        <td><code>60</code></td>
+      </tr>
+      <tr>
+        <td><code>position</code></td>
+        <td><code>str</code></td>
+        <td><p>Position of the colorbar ("topleft", "topright", "bottomleft", "bottomright").
+Defaults to "bottomright".</p></td>
+        <td><code>&#39;bottomright&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>**kwargs</code></td>
+        <td></td>
+        <td><p>Additional keyword arguments.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Optional[&#39;QDockWidget&#39;]</code></td>
+      <td><p>The created QDockWidget, or None if failed.</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Map</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">add_colorbar</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">],</span>
+<span class="o">...</span>     <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Temperature (°C)&quot;</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># Categorical colorbar</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">add_colorbar</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span> <span class="s2">&quot;#ffff00&quot;</span><span class="p">,</span> <span class="s2">&quot;#ff0000&quot;</span><span class="p">],</span>
+<span class="o">...</span>     <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">categorical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Risk Level&quot;</span>
+<span class="o">...</span> <span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>qgis_map/qgis_map.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_colorbar</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">colors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]],</span>
+    <span class="n">vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">categorical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bottomright&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;QDockWidget&quot;</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a colorbar to the map.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        colors: The set of colors for interpolation. Can be:</span>
+<span class="sd">            - List of hex strings (e.g., [&quot;#ff0000&quot;, &quot;#00ff00&quot;, &quot;#0000ff&quot;])</span>
+<span class="sd">            - List of RGB tuples (e.g., [(255, 0, 0), (0, 255, 0), (0, 0, 255)])</span>
+<span class="sd">            - List of color names (e.g., [&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;])</span>
+<span class="sd">        vmin: The minimum value for the colormap. Defaults to 0.</span>
+<span class="sd">        vmax: The maximum value for the colormap. Defaults to 1.0.</span>
+<span class="sd">        index: The values corresponding to each color. Must be sorted and same length as colors.</span>
+<span class="sd">            If None, a regular grid between vmin and vmax is created.</span>
+<span class="sd">        caption: The caption/title for the colorbar. Defaults to &quot;&quot;.</span>
+<span class="sd">        categorical: Whether to create a categorical (discrete) colorbar. Defaults to False.</span>
+<span class="sd">        step: The number of steps for categorical colorbar. Defaults to None.</span>
+<span class="sd">        width: The width of the colorbar widget in pixels. Defaults to 300.</span>
+<span class="sd">        height: The height of the colorbar widget in pixels. Defaults to 60.</span>
+<span class="sd">        position: Position of the colorbar (&quot;topleft&quot;, &quot;topright&quot;, &quot;bottomleft&quot;, &quot;bottomright&quot;).</span>
+<span class="sd">            Defaults to &quot;bottomright&quot;.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The created QDockWidget, or None if failed.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; m = Map()</span>
+<span class="sd">        &gt;&gt;&gt; m.add_colorbar(</span>
+<span class="sd">        ...     colors=[&quot;blue&quot;, &quot;cyan&quot;, &quot;yellow&quot;, &quot;red&quot;],</span>
+<span class="sd">        ...     vmin=0,</span>
+<span class="sd">        ...     vmax=100,</span>
+<span class="sd">        ...     caption=&quot;Temperature (°C)&quot;</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; # Categorical colorbar</span>
+<span class="sd">        &gt;&gt;&gt; m.add_colorbar(</span>
+<span class="sd">        ...     colors=[&quot;#00ff00&quot;, &quot;#ffff00&quot;, &quot;#ff0000&quot;],</span>
+<span class="sd">        ...     vmin=0,</span>
+<span class="sd">        ...     vmax=1,</span>
+<span class="sd">        ...     categorical=True,</span>
+<span class="sd">        ...     caption=&quot;Risk Level&quot;</span>
+<span class="sd">        ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_PYQT</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyQt5 is required for colorbar functionality.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Colorbar requires running within QGIS.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QScrollArea</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QLinearGradient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QRectF</span>
+
+    <span class="c1"># Convert colors to QColor</span>
+    <span class="n">qcolors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">QColor</span><span class="p">(</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">color</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">color</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">qcolors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid color type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">color</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Create index if not provided</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">vmin</span> <span class="o">+</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The index and colors must be the same length.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Create the dock widget</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">caption</span> <span class="k">if</span> <span class="n">caption</span> <span class="k">else</span> <span class="s2">&quot;Colorbar&quot;</span>
+    <span class="n">dock</span> <span class="o">=</span> <span class="n">QDockWidget</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">mainWindow</span><span class="p">())</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">ColorbarDock&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create the main widget</span>
+    <span class="n">main_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># Create colorbar as a pixmap and display in QLabel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPixmap</span><span class="p">,</span> <span class="n">QImage</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span> <span class="k">as</span> <span class="n">QtCore</span>
+
+    <span class="c1"># Create the colorbar image</span>
+    <span class="n">bar_height</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QPixmap</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">)</span>
+    <span class="n">pixmap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">transparent</span><span class="p">)</span>
+
+    <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">categorical</span> <span class="ow">and</span> <span class="n">step</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Draw discrete color segments</span>
+        <span class="n">segment_width</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="n">step</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">color_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">color_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">color_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">color_idx</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">fillRect</span><span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">segment_width</span><span class="p">),</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">segment_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">bar_height</span><span class="p">,</span>
+                <span class="n">qcolors</span><span class="p">[</span><span class="n">color_idx</span><span class="p">],</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Draw continuous gradient</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">QLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">qcolors</span><span class="p">):</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qcolors</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">qcolors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">qcolors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">fillRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">,</span> <span class="n">gradient</span><span class="p">)</span>
+
+    <span class="c1"># Draw border</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#000000&quot;</span><span class="p">))</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bar_height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+
+    <span class="c1"># Create label with the colorbar pixmap</span>
+    <span class="n">colorbar_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+    <span class="n">colorbar_label</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+    <span class="n">colorbar_label</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">)</span>
+    <span class="n">colorbar_label</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">colorbar_label</span><span class="p">)</span>
+
+    <span class="c1"># Add value labels</span>
+    <span class="n">labels_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+    <span class="n">vmin_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">vmax_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">labels_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">vmin_label</span><span class="p">)</span>
+    <span class="n">labels_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+    <span class="n">labels_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">vmax_label</span><span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">labels_layout</span><span class="p">)</span>
+
+    <span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">main_widget</span><span class="p">)</span>
+
+    <span class="c1"># Set size constraints instead of fixed size</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="n">width</span> <span class="o">+</span> <span class="mi">40</span><span class="p">)</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">(</span><span class="n">width</span> <span class="o">+</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">height</span> <span class="o">+</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setMaximumHeight</span><span class="p">(</span><span class="n">height</span> <span class="o">+</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># Determine dock area</span>
+    <span class="n">dock_areas</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;topleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+        <span class="s2">&quot;topright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+        <span class="s2">&quot;bottomleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+        <span class="s2">&quot;bottomright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">dock_areas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">dock</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dock</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="qgis_map.qgis_map.Map.add_gdf" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">add_gdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="s1">&#39;GeoDataFrame&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zoom_to_layer</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
@@ -3096,6 +3837,283 @@ Use get_basemap_names() to see all available basemaps.</p></td>
         <span class="k">if</span> <span class="n">layers_dock</span><span class="p">:</span>
             <span class="n">layers_dock</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
             <span class="n">layers_dock</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="qgis_map.qgis_map.Map.add_legend" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Legend&#39;</span><span class="p">,</span> <span class="n">legend_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;bottomright&#39;</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#qgis_map.qgis_map.Map.add_legend" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Add a legend to the map.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>str</code></td>
+        <td><p>Title of the legend. Defaults to "Legend".</p></td>
+        <td><code>&#39;Legend&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>legend_dict</code></td>
+        <td><code>Optional[Dict[str, str]]</code></td>
+        <td><p>A dictionary containing legend items as keys and colors as values.
+If provided, labels and colors will be ignored.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>labels</code></td>
+        <td><code>Optional[List[str]]</code></td>
+        <td><p>A list of legend labels.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>colors</code></td>
+        <td><code>Optional[List[Union[str, Tuple]]]</code></td>
+        <td><p>A list of legend colors (hex strings, RGB tuples, or color names).</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>position</code></td>
+        <td><code>str</code></td>
+        <td><p>Position of the legend ("topleft", "topright", "bottomleft", "bottomright").
+Defaults to "bottomright".</p></td>
+        <td><code>&#39;bottomright&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>layer_name</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Layer name to associate the legend with. Defaults to None.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>**kwargs</code></td>
+        <td></td>
+        <td><p>Additional keyword arguments (e.g., width, height).</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Optional[&#39;QDockWidget&#39;]</code></td>
+      <td><p>The created QDockWidget, or None if failed.</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Map</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">add_legend</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land Cover&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Forest&quot;</span><span class="p">,</span> <span class="s2">&quot;Water&quot;</span><span class="p">,</span> <span class="s2">&quot;Urban&quot;</span><span class="p">],</span>
+<span class="o">...</span>     <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#228B22&quot;</span><span class="p">,</span> <span class="s2">&quot;#4169E1&quot;</span><span class="p">,</span> <span class="s2">&quot;#DC143C&quot;</span><span class="p">]</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># Or using a dictionary</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">add_legend</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">legend_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Forest&quot;</span><span class="p">:</span> <span class="s2">&quot;#228B22&quot;</span><span class="p">,</span> <span class="s2">&quot;Water&quot;</span><span class="p">:</span> <span class="s2">&quot;#4169E1&quot;</span><span class="p">,</span> <span class="s2">&quot;Urban&quot;</span><span class="p">:</span> <span class="s2">&quot;#DC143C&quot;</span><span class="p">}</span>
+<span class="o">...</span> <span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>qgis_map/qgis_map.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_legend</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Legend&quot;</span><span class="p">,</span>
+    <span class="n">legend_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bottomright&quot;</span><span class="p">,</span>
+    <span class="n">layer_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;QDockWidget&quot;</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a legend to the map.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        title: Title of the legend. Defaults to &quot;Legend&quot;.</span>
+<span class="sd">        legend_dict: A dictionary containing legend items as keys and colors as values.</span>
+<span class="sd">            If provided, labels and colors will be ignored.</span>
+<span class="sd">        labels: A list of legend labels.</span>
+<span class="sd">        colors: A list of legend colors (hex strings, RGB tuples, or color names).</span>
+<span class="sd">        position: Position of the legend (&quot;topleft&quot;, &quot;topright&quot;, &quot;bottomleft&quot;, &quot;bottomright&quot;).</span>
+<span class="sd">            Defaults to &quot;bottomright&quot;.</span>
+<span class="sd">        layer_name: Layer name to associate the legend with. Defaults to None.</span>
+<span class="sd">        **kwargs: Additional keyword arguments (e.g., width, height).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The created QDockWidget, or None if failed.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; m = Map()</span>
+<span class="sd">        &gt;&gt;&gt; m.add_legend(</span>
+<span class="sd">        ...     title=&quot;Land Cover&quot;,</span>
+<span class="sd">        ...     labels=[&quot;Forest&quot;, &quot;Water&quot;, &quot;Urban&quot;],</span>
+<span class="sd">        ...     colors=[&quot;#228B22&quot;, &quot;#4169E1&quot;, &quot;#DC143C&quot;]</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; # Or using a dictionary</span>
+<span class="sd">        &gt;&gt;&gt; m.add_legend(</span>
+<span class="sd">        ...     legend_dict={&quot;Forest&quot;: &quot;#228B22&quot;, &quot;Water&quot;: &quot;#4169E1&quot;, &quot;Urban&quot;: &quot;#DC143C&quot;}</span>
+<span class="sd">        ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_PYQT</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyQt5 is required for legend functionality.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Legend requires running within QGIS.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Process legend_dict</span>
+    <span class="k">if</span> <span class="n">legend_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">legend_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The legend_dict must be a dictionary.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">legend_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">legend_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="c1"># Validate labels and colors</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;One&quot;</span><span class="p">,</span> <span class="s2">&quot;Two&quot;</span><span class="p">,</span> <span class="s2">&quot;Three&quot;</span><span class="p">,</span> <span class="s2">&quot;Four&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#8DD3C7&quot;</span><span class="p">,</span> <span class="s2">&quot;#FFFFB3&quot;</span><span class="p">,</span> <span class="s2">&quot;#BEBADA&quot;</span><span class="p">,</span> <span class="s2">&quot;#FB8072&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The labels must be a list.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The colors must be a list.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Convert RGB tuples to hex if needed</span>
+    <span class="n">converted_colors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;#</span><span class="si">{:02x}{:02x}{:02x}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;#</span><span class="si">{:02x}{:02x}{:02x}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid color tuple: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Handle colors without # prefix</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">color</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">color</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">converted_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid color type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">color</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">converted_colors</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The labels and colors must be the same length.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Validate position</span>
+    <span class="n">allowed_positions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;topleft&quot;</span><span class="p">,</span> <span class="s2">&quot;topright&quot;</span><span class="p">,</span> <span class="s2">&quot;bottomleft&quot;</span><span class="p">,</span> <span class="s2">&quot;bottomright&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_positions</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The position must be one of: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">allowed_positions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Create the dock widget</span>
+    <span class="n">dock</span> <span class="o">=</span> <span class="n">QDockWidget</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">mainWindow</span><span class="p">())</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">LegendDock&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create the main widget with scroll area</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QScrollArea</span>
+
+    <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+    <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">main_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># Add legend items</span>
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+        <span class="n">item_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="c1"># Color box</span>
+        <span class="n">color_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="n">color_label</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">color_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;background-color: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">; border: 1px solid #000000;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Label text</span>
+        <span class="n">text_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="n">item_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">color_label</span><span class="p">)</span>
+        <span class="n">item_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">text_label</span><span class="p">)</span>
+        <span class="n">item_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">item_layout</span><span class="p">)</span>
+
+    <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+    <span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+    <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">main_widget</span><span class="p">)</span>
+    <span class="n">dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">scroll</span><span class="p">)</span>
+
+    <span class="c1"># Set size constraints if provided</span>
+    <span class="k">if</span> <span class="s2">&quot;width&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;height&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Determine dock area</span>
+    <span class="n">dock_areas</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;topleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+        <span class="s2">&quot;topright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+        <span class="s2">&quot;bottomleft&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+        <span class="s2">&quot;bottomright&quot;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">dock_areas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_iface</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">dock</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dock</span>
 </code></pre></div>
         </details>
     </div>
