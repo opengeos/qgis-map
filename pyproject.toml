@@ -6,7 +6,7 @@ dynamic = [
 ]
 description = "a Python library that provides a high-level, leafmap-like API for working with PyQGIS"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = [
     "qgis-map",
 ]
