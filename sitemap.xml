@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://giswqs.github.io/qgis-map/</loc>
+         <loc>https://opengeos.org/qgis-map/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/changelog/</loc>
+         <loc>https://opengeos.org/qgis-map/changelog/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/common/</loc>
+         <loc>https://opengeos.org/qgis-map/common/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/contributing/</loc>
+         <loc>https://opengeos.org/qgis-map/contributing/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/faq/</loc>
+         <loc>https://opengeos.org/qgis-map/faq/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/installation/</loc>
+         <loc>https://opengeos.org/qgis-map/installation/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/qgis_map/</loc>
+         <loc>https://opengeos.org/qgis-map/qgis_map/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/usage/</loc>
+         <loc>https://opengeos.org/qgis-map/usage/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
-         <loc>https://giswqs.github.io/qgis-map/examples/intro/</loc>
+         <loc>https://opengeos.org/qgis-map/examples/intro/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
 </urlset>
