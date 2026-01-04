@@ -1147,6 +1147,369 @@ class Map:
 
         return output_path
 
+    def add_legend(
+        self,
+        title: str = "Legend",
+        legend_dict: Optional[Dict[str, str]] = None,
+        labels: Optional[List[str]] = None,
+        colors: Optional[List[Union[str, Tuple]]] = None,
+        position: str = "bottomright",
+        layer_name: Optional[str] = None,
+        **kwargs,
+    ) -> Optional["QDockWidget"]:
+        """Add a legend to the map.
+
+        Args:
+            title: Title of the legend. Defaults to "Legend".
+            legend_dict: A dictionary containing legend items as keys and colors as values.
+                If provided, labels and colors will be ignored.
+            labels: A list of legend labels.
+            colors: A list of legend colors (hex strings, RGB tuples, or color names).
+            position: Position of the legend ("topleft", "topright", "bottomleft", "bottomright").
+                Defaults to "bottomright".
+            layer_name: Layer name to associate the legend with. Defaults to None.
+            **kwargs: Additional keyword arguments (e.g., width, height).
+
+        Returns:
+            The created QDockWidget, or None if failed.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_legend(
+            ...     title="Land Cover",
+            ...     labels=["Forest", "Water", "Urban"],
+            ...     colors=["#228B22", "#4169E1", "#DC143C"]
+            ... )
+            >>> # Or using a dictionary
+            >>> m.add_legend(
+            ...     legend_dict={"Forest": "#228B22", "Water": "#4169E1", "Urban": "#DC143C"}
+            ... )
+        """
+        if not HAS_PYQT:
+            print("PyQt5 is required for legend functionality.")
+            return None
+
+        if self._iface is None:
+            print("Legend requires running within QGIS.")
+            return None
+
+        # Process legend_dict
+        if legend_dict is not None:
+            if not isinstance(legend_dict, dict):
+                print("The legend_dict must be a dictionary.")
+                return None
+            labels = list(legend_dict.keys())
+            colors = list(legend_dict.values())
+
+        # Validate labels and colors
+        if labels is None:
+            labels = ["One", "Two", "Three", "Four"]
+        if colors is None:
+            colors = ["#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072"]
+
+        if not isinstance(labels, list):
+            print("The labels must be a list.")
+            return None
+        if not isinstance(colors, list):
+            print("The colors must be a list.")
+            return None
+
+        # Convert RGB tuples to hex if needed
+        converted_colors = []
+        for color in colors:
+            if isinstance(color, tuple):
+                if len(color) == 3:
+                    converted_colors.append(
+                        "#{:02x}{:02x}{:02x}".format(
+                            int(color[0]), int(color[1]), int(color[2])
+                        )
+                    )
+                elif len(color) == 4:
+                    converted_colors.append(
+                        "#{:02x}{:02x}{:02x}".format(
+                            int(color[0]), int(color[1]), int(color[2])
+                        )
+                    )
+                else:
+                    print(f"Invalid color tuple: {color}")
+                    return None
+            elif isinstance(color, str):
+                # Handle colors without # prefix
+                if len(color) == 6 and not color.startswith("#"):
+                    converted_colors.append("#" + color)
+                else:
+                    converted_colors.append(color)
+            else:
+                print(f"Invalid color type: {type(color)}")
+                return None
+        colors = converted_colors
+
+        if len(labels) != len(colors):
+            print("The labels and colors must be the same length.")
+            return None
+
+        # Validate position
+        allowed_positions = ["topleft", "topright", "bottomleft", "bottomright"]
+        if position not in allowed_positions:
+            print(f"The position must be one of: {', '.join(allowed_positions)}")
+            return None
+
+        # Create the dock widget
+        dock = QDockWidget(title, self._iface.mainWindow())
+        dock.setObjectName(f"{title}LegendDock")
+
+        # Create the main widget with scroll area
+        from PyQt5.QtWidgets import QScrollArea
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+
+        main_widget = QWidget()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(5)
+
+        # Add legend items
+        for label, color in zip(labels, colors):
+            item_layout = QHBoxLayout()
+
+            # Color box
+            color_label = QLabel()
+            color_label.setFixedSize(20, 20)
+            color_label.setStyleSheet(
+                f"background-color: {color}; border: 1px solid #000000;"
+            )
+
+            # Label text
+            text_label = QLabel(label)
+
+            item_layout.addWidget(color_label)
+            item_layout.addWidget(text_label)
+            item_layout.addStretch()
+
+            layout.addLayout(item_layout)
+
+        layout.addStretch()
+        main_widget.setLayout(layout)
+        scroll.setWidget(main_widget)
+        dock.setWidget(scroll)
+
+        # Set size constraints if provided
+        if "width" in kwargs:
+            dock.setMinimumWidth(kwargs["width"])
+        else:
+            dock.setMinimumWidth(150)
+
+        if "height" in kwargs:
+            dock.setMinimumHeight(kwargs["height"])
+
+        # Determine dock area
+        dock_areas = {
+            "topleft": Qt.LeftDockWidgetArea,
+            "topright": Qt.RightDockWidgetArea,
+            "bottomleft": Qt.LeftDockWidgetArea,
+            "bottomright": Qt.RightDockWidgetArea,
+        }
+        area = dock_areas.get(position.lower(), Qt.RightDockWidgetArea)
+
+        self._iface.addDockWidget(area, dock)
+
+        return dock
+
+    def add_colorbar(
+        self,
+        colors: List[Union[str, Tuple]],
+        vmin: float = 0,
+        vmax: float = 1.0,
+        index: Optional[List[float]] = None,
+        caption: str = "",
+        categorical: bool = False,
+        step: Optional[int] = None,
+        width: int = 300,
+        height: int = 60,
+        position: str = "bottomright",
+        **kwargs,
+    ) -> Optional["QDockWidget"]:
+        """Add a colorbar to the map.
+
+        Args:
+            colors: The set of colors for interpolation. Can be:
+                - List of hex strings (e.g., ["#ff0000", "#00ff00", "#0000ff"])
+                - List of RGB tuples (e.g., [(255, 0, 0), (0, 255, 0), (0, 0, 255)])
+                - List of color names (e.g., ["red", "green", "blue"])
+            vmin: The minimum value for the colormap. Defaults to 0.
+            vmax: The maximum value for the colormap. Defaults to 1.0.
+            index: The values corresponding to each color. Must be sorted and same length as colors.
+                If None, a regular grid between vmin and vmax is created.
+            caption: The caption/title for the colorbar. Defaults to "".
+            categorical: Whether to create a categorical (discrete) colorbar. Defaults to False.
+            step: The number of steps for categorical colorbar. Defaults to None.
+            width: The width of the colorbar widget in pixels. Defaults to 300.
+            height: The height of the colorbar widget in pixels. Defaults to 60.
+            position: Position of the colorbar ("topleft", "topright", "bottomleft", "bottomright").
+                Defaults to "bottomright".
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            The created QDockWidget, or None if failed.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_colorbar(
+            ...     colors=["blue", "cyan", "yellow", "red"],
+            ...     vmin=0,
+            ...     vmax=100,
+            ...     caption="Temperature (°C)"
+            ... )
+            >>> # Categorical colorbar
+            >>> m.add_colorbar(
+            ...     colors=["#00ff00", "#ffff00", "#ff0000"],
+            ...     vmin=0,
+            ...     vmax=1,
+            ...     categorical=True,
+            ...     caption="Risk Level"
+            ... )
+        """
+        if not HAS_PYQT:
+            print("PyQt5 is required for colorbar functionality.")
+            return None
+
+        if self._iface is None:
+            print("Colorbar requires running within QGIS.")
+            return None
+
+        from PyQt5.QtWidgets import QScrollArea
+        from PyQt5.QtGui import QPainter, QLinearGradient
+        from PyQt5.QtCore import QRectF
+
+        # Convert colors to QColor
+        qcolors = []
+        for color in colors:
+            if isinstance(color, tuple):
+                if len(color) == 3:
+                    qcolors.append(QColor(int(color[0]), int(color[1]), int(color[2])))
+                elif len(color) == 4:
+                    qcolors.append(
+                        QColor(
+                            int(color[0]),
+                            int(color[1]),
+                            int(color[2]),
+                            int(color[3] * 255) if color[3] <= 1 else int(color[3]),
+                        )
+                    )
+            elif isinstance(color, str):
+                if len(color) == 6 and not color.startswith("#"):
+                    qcolors.append(QColor("#" + color))
+                else:
+                    qcolors.append(QColor(color))
+            else:
+                print(f"Invalid color type: {type(color)}")
+                return None
+
+        # Create index if not provided
+        if index is None:
+            index = [
+                vmin + (vmax - vmin) * i / (len(qcolors) - 1)
+                for i in range(len(qcolors))
+            ]
+        elif len(index) != len(qcolors):
+            print("The index and colors must be the same length.")
+            return None
+
+        # Create the dock widget
+        title = caption if caption else "Colorbar"
+        dock = QDockWidget(title, self._iface.mainWindow())
+        dock.setObjectName(f"{title}ColorbarDock")
+
+        # Create the main widget
+        main_widget = QWidget()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(5)
+
+        # Create colorbar as a pixmap and display in QLabel
+        from PyQt5.QtGui import QPixmap, QImage
+        from PyQt5.QtCore import Qt as QtCore
+
+        # Create the colorbar image
+        bar_height = 30
+        pixmap = QPixmap(width, bar_height)
+        pixmap.fill(QtCore.transparent)
+
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        if categorical and step and step > 1:
+            # Draw discrete color segments
+            segment_width = width / step
+            for i in range(step):
+                if step > 1:
+                    color_idx = int(i * (len(qcolors) - 1) / (step - 1))
+                else:
+                    color_idx = 0
+                color_idx = min(color_idx, len(qcolors) - 1)
+                painter.fillRect(
+                    int(i * segment_width),
+                    0,
+                    int(segment_width + 1),
+                    bar_height,
+                    qcolors[color_idx],
+                )
+        else:
+            # Draw continuous gradient
+            gradient = QLinearGradient(0, 0, width, 0)
+            if len(qcolors) > 1:
+                for i, color in enumerate(qcolors):
+                    pos = i / (len(qcolors) - 1)
+                    gradient.setColorAt(pos, color)
+            else:
+                gradient.setColorAt(0, qcolors[0])
+                gradient.setColorAt(1, qcolors[0])
+            painter.fillRect(0, 0, width, bar_height, gradient)
+
+        # Draw border
+        painter.setPen(QColor("#000000"))
+        painter.drawRect(0, 0, width - 1, bar_height - 1)
+        painter.end()
+
+        # Create label with the colorbar pixmap
+        colorbar_label = QLabel()
+        colorbar_label.setPixmap(pixmap)
+        colorbar_label.setMinimumSize(width, bar_height)
+        colorbar_label.setMaximumSize(width, bar_height)
+        layout.addWidget(colorbar_label)
+
+        # Add value labels
+        labels_layout = QHBoxLayout()
+        vmin_label = QLabel(f"{vmin:.2f}")
+        vmax_label = QLabel(f"{vmax:.2f}")
+        labels_layout.addWidget(vmin_label)
+        labels_layout.addStretch()
+        labels_layout.addWidget(vmax_label)
+        layout.addLayout(labels_layout)
+
+        main_widget.setLayout(layout)
+        dock.setWidget(main_widget)
+
+        # Set size constraints instead of fixed size
+        dock.setMinimumWidth(width + 40)
+        dock.setMaximumWidth(width + 60)
+        dock.setMinimumHeight(height + 80)
+        dock.setMaximumHeight(height + 100)
+
+        # Determine dock area
+        dock_areas = {
+            "topleft": Qt.LeftDockWidgetArea,
+            "topright": Qt.RightDockWidgetArea,
+            "bottomleft": Qt.LeftDockWidgetArea,
+            "bottomright": Qt.RightDockWidgetArea,
+        }
+        area = dock_areas.get(position.lower(), Qt.RightDockWidgetArea)
+
+        self._iface.addDockWidget(area, dock)
+
+        return dock
+
     def create_dock_widget(
         self,
         title: str,

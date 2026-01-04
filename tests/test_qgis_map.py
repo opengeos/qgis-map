@@ -127,6 +127,8 @@ class TestMapClass(unittest.TestCase):
             self.assertTrue(hasattr(Map, "add_vector"))
             self.assertTrue(hasattr(Map, "add_raster"))
             self.assertTrue(hasattr(Map, "add_time_slider"))
+            self.assertTrue(hasattr(Map, "add_legend"))
+            self.assertTrue(hasattr(Map, "add_colorbar"))
         except ImportError:
             # Import error is expected if running outside QGIS
             pass
