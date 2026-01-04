@@ -1,6 +1,7 @@
 # Welcome to qgis-map
 
 [![image](https://img.shields.io/pypi/v/qgis-map.svg)](https://pypi.python.org/pypi/qgis-map)
+[![image](https://img.shields.io/conda/vn/conda-forge/qgis-map.svg)](https://anaconda.org/conda-forge/qgis-map)
 
 **A Python library that provides a high-level, leafmap-like API for working with PyQGIS**
 
@@ -38,40 +39,6 @@ m.add_time_slider(layers={
     "2021": "data_2021.tif",
     "2022": "data_2022.tif"
 })
-```
-
-## Contents
-
-```{toctree}
-:maxdepth: 2
-:caption: Getting Started
-
-installation
-usage
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Examples
-
-examples/intro
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: API Reference
-
-qgis_map
-common
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Development
-
-contributing
-changelog
-faq
 ```
 
 ## Credits
