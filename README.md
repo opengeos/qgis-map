@@ -1,7 +1,7 @@
 # qgis-map
 
 [![image](https://img.shields.io/pypi/v/qgis-map.svg)](https://pypi.python.org/pypi/qgis-map)
-<!-- [![image](https://img.shields.io/conda/vn/conda-forge/qgis-map.svg)](https://anaconda.org/conda-forge/qgis-map) -->
+[![image](https://img.shields.io/conda/vn/conda-forge/qgis-map.svg)](https://anaconda.org/conda-forge/qgis-map)
 
 **A Python library that provides a high-level, leafmap-like API for working with PyQGIS**
 
@@ -19,8 +19,16 @@
 
 ## Installation
 
+Use `pip` to install:
+
 ```bash
 pip install qgis-map
+```
+
+Use `conda` to install:
+
+```bash
+conda install -c conda-forge qgis-map
 ```
 
 ## Quick Start
