@@ -46,6 +46,14 @@ def hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
         A tuple of (R, G, B) values.
     """
     hex_color = hex_color.lstrip("#")
+    if len(hex_color) != 6:
+        raise ValueError(
+            f"Invalid hex color '{hex_color}': expected 6 hexadecimal characters."
+        )
+    if not all(c in "0123456789abcdefABCDEF" for c in hex_color):
+        raise ValueError(
+            f"Invalid hex color '{hex_color}': contains non-hexadecimal characters."
+        )
     return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 
 
