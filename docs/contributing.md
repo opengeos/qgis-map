@@ -79,7 +79,7 @@ Ready to contribute? Here's how to set up qgis-map for local development.
 
     ```shell
     $ flake8 qgis_map tests
-    $ python setup.py test or pytest
+    $ pytest
     $ tox
     ```
 
