@@ -710,6 +710,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#qgis_map.common.get_color_ramp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_color_ramp()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#qgis_map.common.get_file_extension" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -780,6 +791,17 @@
     <span class="md-ellipsis">
       
         is_vector_file()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qgis_map.common.parse_point_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse_point_data()
       
     </span>
   </a>
@@ -884,6 +906,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#qgis_map.common.get_color_ramp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_color_ramp()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#qgis_map.common.get_file_extension" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -954,6 +987,17 @@
     <span class="md-ellipsis">
       
         is_vector_file()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qgis_map.common.parse_point_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse_point_data()
       
     </span>
   </a>
@@ -1195,6 +1239,144 @@
         <span class="k">return</span> <span class="n">output_path</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="qgis_map.common.get_color_ramp" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_color_ramp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n_colors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+<a href="#qgis_map.common.get_color_ramp" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Get QGIS color ramp by name.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>str</code></td>
+        <td><p>Color ramp name (e.g., "Spectral", "YlOrRd", "RdYlGn").</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>n_colors</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of colors in the ramp. Defaults to 5.</p></td>
+        <td><code>5</code></td>
+      </tr>
+      <tr>
+        <td><code>reverse</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to reverse the color ramp. Defaults to False.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Any</code></td>
+      <td><p>QgsColorRamp object, or None if not available.</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ImportError</code></td>
+        <td><p>If QGIS is not available.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>qgis_map/common.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_color_ramp</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">n_colors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get QGIS color ramp by name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Color ramp name (e.g., &quot;Spectral&quot;, &quot;YlOrRd&quot;, &quot;RdYlGn&quot;).</span>
+<span class="sd">        n_colors: Number of colors in the ramp. Defaults to 5.</span>
+<span class="sd">        reverse: Whether to reverse the color ramp. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        QgsColorRamp object, or None if not available.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If QGIS is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qgis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">QgsStyle</span><span class="p">,</span> <span class="n">QgsGradientColorRamp</span><span class="p">,</span> <span class="n">QgsColorRampShader</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;QGIS libraries required for color ramps&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get default style</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="n">QgsStyle</span><span class="o">.</span><span class="n">defaultStyle</span><span class="p">()</span>
+
+    <span class="c1"># Try to get color ramp by name</span>
+    <span class="n">color_ramp</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">colorRamp</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">color_ramp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If not found, try common variations</span>
+        <span class="n">variations</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+            <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+            <span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">variations</span><span class="p">:</span>
+            <span class="n">color_ramp</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">colorRamp</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">color_ramp</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="c1"># If still not found, return a default gradient</span>
+    <span class="k">if</span> <span class="n">color_ramp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Color ramp &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found, using default gradient&quot;</span><span class="p">)</span>
+        <span class="n">color_ramp</span> <span class="o">=</span> <span class="n">QgsGradientColorRamp</span><span class="p">()</span>
+
+    <span class="c1"># Reverse if requested</span>
+    <span class="k">if</span> <span class="n">reverse</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">color_ramp</span><span class="p">,</span> <span class="s2">&quot;invert&quot;</span><span class="p">):</span>
+        <span class="n">color_ramp</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">color_ramp</span>
 </code></pre></div>
         </details>
     </div>
@@ -1688,6 +1870,154 @@
         <span class="s2">&quot;gdb&quot;</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">get_file_extension</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="ow">in</span> <span class="n">vector_extensions</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="qgis_map.common.parse_point_data" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_point_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span></code>
+
+
+<a href="#qgis_map.common.parse_point_data" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse CSV file or DataFrame to extract coordinates and attributes.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>data</code></td>
+        <td><code>Union[str, Any]</code></td>
+        <td><p>Path to CSV file or pandas DataFrame.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>x</code></td>
+        <td><code>str</code></td>
+        <td><p>Column name for x-coordinate (longitude).</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>y</code></td>
+        <td><code>str</code></td>
+        <td><p>Column name for y-coordinate (latitude).</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>encoding</code></td>
+        <td><code>str</code></td>
+        <td><p>Encoding for CSV file. Defaults to "utf-8".</p></td>
+        <td><code>&#39;utf-8&#39;</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Tuple[Any, List[str]]</code></td>
+      <td><p>A tuple of (DataFrame, list of attribute column names).</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ImportError</code></td>
+        <td><p>If pandas is not available.</p></td>
+      </tr>
+      <tr>
+        <td><code>FileNotFoundError</code></td>
+        <td><p>If CSV file doesn't exist.</p></td>
+      </tr>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>If required columns are not found.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>qgis_map/common.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_point_data</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse CSV file or DataFrame to extract coordinates and attributes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: Path to CSV file or pandas DataFrame.</span>
+<span class="sd">        x: Column name for x-coordinate (longitude).</span>
+<span class="sd">        y: Column name for y-coordinate (latitude).</span>
+<span class="sd">        encoding: Encoding for CSV file. Defaults to &quot;utf-8&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple of (DataFrame, list of attribute column names).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not available.</span>
+<span class="sd">        FileNotFoundError: If CSV file doesn&#39;t exist.</span>
+<span class="sd">        ValueError: If required columns are not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;pandas is required for parsing point data&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Load data</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File not found: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="c1"># Validate required columns</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#39; not found in data. Available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&#39; not found in data. Available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Get attribute columns (all except x and y)</span>
+    <span class="n">attr_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">attr_columns</span>
 </code></pre></div>
         </details>
     </div>
