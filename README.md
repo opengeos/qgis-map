@@ -14,8 +14,12 @@
 - **Basemap support**: Easy access to OpenStreetMap, Esri, Google, CartoDB, and more
 - **Vector layers**: Add shapefiles, GeoJSON, GeoPackage, and other vector formats
 - **Raster layers**: Add GeoTIFFs, COGs, and apply color ramps
+- **Point data visualization**: Create heatmaps and styled point layers from CSV/DataFrame
+- **Data-driven styling**: Automatic choropleth maps with classification and legends
+- **STAC integration**: Load Cloud Optimized GeoTIFFs from STAC catalogs
 - **Time slider**: Create interactive time-based visualizations with dockable panels
 - **Dockable panels**: Create custom interactive panels in QGIS
+- **Enhanced utilities**: Layer opacity control, pattern-based layer search, zoom to GeoDataFrame
 
 ## Installation
 
@@ -151,6 +155,101 @@ layers = {
 m.add_time_slider(layers=layers, time_interval=2)
 ```
 
+### Advanced Features
+
+#### Point Data Visualization
+
+```python
+from qgis_map import Map
+
+m = Map()
+
+# Add points from CSV with data-driven styling
+m.add_points_from_xy(
+    "cities.csv",
+    x="longitude",
+    y="latitude",
+    color_column="region",
+    size_column="population",
+    popup_fields=["name", "population", "region"],
+    layer_name="Cities"
+)
+
+# Create a heatmap from point data
+m.add_heatmap(
+    "earthquakes.csv",
+    latitude="lat",
+    longitude="lon",
+    value="magnitude",
+    radius=30,
+    color_ramp="YlOrRd",
+    layer_name="Earthquake Heatmap"
+)
+
+# Add circle markers with fixed styling
+m.add_circle_markers_from_xy(
+    "points.csv",
+    radius=15,
+    color="#ff0000",
+    stroke_color="#000000"
+)
+```
+
+#### Data-Driven Styling
+
+```python
+from qgis_map import Map
+
+m = Map()
+
+# Add choropleth map with automatic classification
+m.add_styled_vector(
+    "states.shp",
+    column="population",
+    scheme="Quantiles",  # or "EqualInterval", "NaturalBreaks", "StandardDeviation"
+    k=5,
+    color_ramp="YlOrRd",
+    legend=True,
+    legend_title="Population"
+)
+```
+
+#### STAC Integration
+
+```python
+from qgis_map import Map
+
+m = Map()
+
+# Load STAC item as COG layer
+m.add_stac_layer(
+    url="https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_...",
+    assets="visual",
+    layer_name="Sentinel-2"
+)
+```
+
+#### Enhanced GeoJSON Loading
+
+```python
+from qgis_map import Map
+
+m = Map()
+
+# Load from URL
+m.add_geojson("https://example.com/data.geojson")
+
+# Load from Python dictionary
+geojson_dict = {
+    "type": "FeatureCollection",
+    "features": [...]
+}
+m.add_geojson(geojson_dict, layer_name="Custom GeoJSON")
+
+# Load from file
+m.add_geojson("local_data.geojson", style={"color": "#ff0000"})
+```
+
 ### Utility Methods
 
 ```python
@@ -163,14 +262,25 @@ m.add_vector("data.geojson", layer_name="My Layer")
 # Get layer names
 print(m.get_layer_names())
 
+# Find layers by pattern
+layers = m.find_layer("My*")  # Supports wildcards
+
 # Zoom to a layer
 m.zoom_to_layer("My Layer")
 
 # Zoom to bounds
 m.zoom_to_bounds((-122.5, 37.5, -121.5, 38.5))
 
+# Zoom to GeoDataFrame
+import geopandas as gpd
+gdf = gpd.read_file("data.geojson")
+m.zoom_to_gdf(gdf)
+
 # Set center and zoom
 m.set_center(lat=37.7749, lon=-122.4194, zoom=12)
+
+# Set layer opacity
+m.layer_opacity("My Layer", 0.5)  # 50% transparency
 
 # Remove a layer
 m.remove_layer("My Layer")

@@ -33,6 +33,8 @@ all = [
 
 extra = [
     "pandas",
+    "pystac-client",
+    "requests",
 ]
 
 

@@ -233,3 +233,109 @@ def get_sample_data(name: str = "countries") -> str:
 
     url = samples[name]
     return download_file(url)
+
+
+def parse_point_data(
+    data: Union[str, Any],
+    x: str,
+    y: str,
+    encoding: str = "utf-8",
+) -> Tuple[Any, List[str]]:
+    """Parse CSV file or DataFrame to extract coordinates and attributes.
+
+    Args:
+        data: Path to CSV file or pandas DataFrame.
+        x: Column name for x-coordinate (longitude).
+        y: Column name for y-coordinate (latitude).
+        encoding: Encoding for CSV file. Defaults to "utf-8".
+
+    Returns:
+        A tuple of (DataFrame, list of attribute column names).
+
+    Raises:
+        ImportError: If pandas is not available.
+        FileNotFoundError: If CSV file doesn't exist.
+        ValueError: If required columns are not found.
+    """
+    try:
+        import pandas as pd
+    except ImportError:
+        raise ImportError("pandas is required for parsing point data")
+
+    # Load data
+    if isinstance(data, str):
+        if not os.path.exists(data):
+            raise FileNotFoundError(f"File not found: {data}")
+        df = pd.read_csv(data, encoding=encoding)
+    else:
+        df = data
+
+    # Validate required columns
+    if x not in df.columns:
+        raise ValueError(
+            f"Column '{x}' not found in data. Available: {list(df.columns)}"
+        )
+    if y not in df.columns:
+        raise ValueError(
+            f"Column '{y}' not found in data. Available: {list(df.columns)}"
+        )
+
+    # Get attribute columns (all except x and y)
+    attr_columns = [col for col in df.columns if col not in [x, y]]
+
+    return df, attr_columns
+
+
+def get_color_ramp(
+    name: str,
+    n_colors: int = 5,
+    reverse: bool = False,
+) -> Any:
+    """Get QGIS color ramp by name.
+
+    Args:
+        name: Color ramp name (e.g., "Spectral", "YlOrRd", "RdYlGn").
+        n_colors: Number of colors in the ramp. Defaults to 5.
+        reverse: Whether to reverse the color ramp. Defaults to False.
+
+    Returns:
+        QgsColorRamp object, or None if not available.
+
+    Raises:
+        ImportError: If QGIS is not available.
+    """
+    try:
+        from qgis.core import QgsStyle, QgsGradientColorRamp, QgsColorRampShader
+    except ImportError:
+        raise ImportError("QGIS libraries required for color ramps")
+
+    # Get default style
+    style = QgsStyle.defaultStyle()
+
+    # Try to get color ramp by name
+    color_ramp = style.colorRamp(name)
+
+    if color_ramp is None:
+        # If not found, try common variations
+        variations = [
+            name,
+            name.lower(),
+            name.upper(),
+            name.title(),
+        ]
+
+        for variant in variations:
+            color_ramp = style.colorRamp(variant)
+            if color_ramp:
+                break
+
+    # If still not found, return a default gradient
+    if color_ramp is None:
+        print(f"Color ramp '{name}' not found, using default gradient")
+        color_ramp = QgsGradientColorRamp()
+
+    # Reverse if requested
+    if reverse and hasattr(color_ramp, "invert"):
+        color_ramp.invert()
+
+    return color_ramp

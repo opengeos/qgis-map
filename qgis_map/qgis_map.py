@@ -8,6 +8,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 import os
+import json
+import fnmatch
+import tempfile
 
 # Use TYPE_CHECKING to avoid runtime import errors for type hints
 if TYPE_CHECKING:
@@ -47,6 +50,17 @@ try:
         QgsTemporalNavigationObject,
         QgsDateTimeRange,
         QgsInterval,
+        QgsHeatmapRenderer,
+        QgsClassificationQuantile,
+        QgsClassificationEqualInterval,
+        QgsClassificationJenks,
+        QgsClassificationStandardDeviation,
+        QgsMarkerSymbol,
+        QgsProperty,
+        QgsField,
+        QgsFields,
+        QgsFeature,
+        QgsGeometry,
     )
     from qgis.gui import (
         QgsMapCanvas,
@@ -84,6 +98,27 @@ except ImportError:
     HAS_PYQT = False
     # Define placeholder for type hints
     QColor = None
+
+try:
+    import pandas as pd
+
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+
+try:
+    import requests
+
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
+
+try:
+    from pystac_client import Client as STACClient
+
+    HAS_PYSTAC = True
+except ImportError:
+    HAS_PYSTAC = False
 
 from .basemaps import BASEMAPS, get_basemap_url, get_xyz_uri, get_basemap_names
 
@@ -1549,6 +1584,863 @@ class Map:
         self._iface.addDockWidget(area, dock)
 
         return dock
+
+    def layer_opacity(
+        self,
+        layer_name: str,
+        opacity: float,
+    ) -> bool:
+        """Set opacity for an existing layer.
+
+        Args:
+            layer_name: Name of the layer to modify.
+            opacity: Opacity value between 0.0 (transparent) and 1.0 (opaque).
+
+        Returns:
+            True if opacity was set successfully, False if layer not found.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_vector("data.shp", layer_name="test")
+            >>> m.layer_opacity("test", 0.5)
+            True
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return False
+
+        # Get the layer
+        layer = self.get_layer(layer_name)
+        if layer is None:
+            print(f"Layer '{layer_name}' not found")
+            return False
+
+        # Clamp opacity to valid range
+        opacity = max(0.0, min(1.0, opacity))
+
+        try:
+            # Set opacity based on layer type
+            if layer.type() == QgsMapLayerType.VectorLayer:
+                layer.setOpacity(opacity)
+            elif layer.type() == QgsMapLayerType.RasterLayer:
+                layer.renderer().setOpacity(opacity)
+
+            # Trigger repaint
+            layer.triggerRepaint()
+
+            if self.canvas:
+                self.canvas.refresh()
+
+            return True
+
+        except Exception as e:
+            print(f"Error setting layer opacity: {e}")
+            return False
+
+    def zoom_to_gdf(
+        self,
+        gdf: Any,
+        crs: Optional[str] = None,
+    ) -> None:
+        """Zoom map to GeoDataFrame extent.
+
+        Args:
+            gdf: GeoDataFrame to zoom to.
+            crs: Optional CRS string. If None, uses gdf.crs.
+
+        Example:
+            >>> import geopandas as gpd
+            >>> m = Map()
+            >>> gdf = gpd.read_file("data.geojson")
+            >>> m.zoom_to_gdf(gdf)
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return
+
+        try:
+            # Get bounds from GeoDataFrame
+            bounds = gdf.total_bounds  # Returns (minx, miny, maxx, maxy)
+
+            # Get CRS from gdf if not specified
+            if crs is None:
+                crs = str(gdf.crs)
+
+            # Use existing zoom_to_bounds method
+            self.zoom_to_bounds(bounds, crs=crs)
+
+        except Exception as e:
+            print(f"Error zooming to GeoDataFrame: {e}")
+
+    def find_layer(
+        self,
+        name: str,
+    ) -> Optional[List["QgsMapLayer"]]:
+        """Find all layers matching a name pattern.
+
+        Supports exact matching and wildcard patterns using * and ?.
+
+        Args:
+            name: Layer name or pattern to search for.
+
+        Returns:
+            List of matching layers, or None if no matches found.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_vector("data.shp", layer_name="test1")
+            >>> m.add_vector("data2.shp", layer_name="test2")
+            >>> layers = m.find_layer("test*")
+            >>> len(layers)
+            2
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        # First try exact match
+        exact_matches = self.project.mapLayersByName(name)
+        if exact_matches:
+            return exact_matches
+
+        # If no exact match, try pattern matching
+        all_layers = list(self.project.mapLayers().values())
+        matches = []
+
+        for layer in all_layers:
+            if fnmatch.fnmatch(layer.name(), name):
+                matches.append(layer)
+
+        return matches if matches else None
+
+    def add_geojson(
+        self,
+        source: Union[str, Dict],
+        layer_name: Optional[str] = None,
+        style: Optional[Dict] = None,
+        zoom_to_layer: bool = False,
+        **kwargs,
+    ) -> Optional["QgsVectorLayer"]:
+        """Add a GeoJSON layer from file, URL, or Python dict.
+
+        Args:
+            source: GeoJSON file path, URL, or Python dictionary.
+            layer_name: Name for the layer. If None, auto-generated.
+            style: Optional style dictionary with keys: color, stroke_color, stroke_width, opacity, symbol.
+            zoom_to_layer: Whether to zoom to layer extent. Defaults to False.
+            **kwargs: Additional keyword arguments passed to add_vector.
+
+        Returns:
+            The created vector layer, or None if creation failed.
+
+        Example:
+            >>> m = Map()
+            >>> # From file
+            >>> m.add_geojson("data.geojson")
+            >>> # From URL
+            >>> m.add_geojson("https://example.com/data.geojson")
+            >>> # From dict
+            >>> geojson_dict = {"type": "FeatureCollection", "features": [...]}
+            >>> m.add_geojson(geojson_dict, layer_name="custom")
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        temp_file = None
+
+        try:
+            # Handle different source types
+            if isinstance(source, dict):
+                # Python dictionary - save to temporary file
+                temp_file = tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".geojson", delete=False
+                )
+                json.dump(source, temp_file)
+                temp_file.close()
+                file_path = temp_file.name
+
+            elif source.startswith(("http://", "https://")):
+                # URL - download the file
+                from . import common
+
+                file_path = common.download_file(source)
+
+            else:
+                # Assume it's a file path
+                file_path = source
+
+            # Use existing add_vector method
+            layer = self.add_vector(
+                file_path,
+                layer_name=layer_name,
+                style=style,
+                zoom_to_layer=zoom_to_layer,
+                **kwargs,
+            )
+
+            return layer
+
+        except Exception as e:
+            print(f"Error adding GeoJSON: {e}")
+            return None
+
+        finally:
+            # Clean up temporary file if created
+            if temp_file is not None:
+                try:
+                    os.unlink(temp_file.name)
+                except:
+                    pass
+
+    def add_circle_markers_from_xy(
+        self,
+        data: Union[str, Any],
+        x: str = "longitude",
+        y: str = "latitude",
+        radius: Union[float, str] = 10,
+        color: Union[str, List] = "#3388ff",
+        stroke_color: str = "#000000",
+        stroke_width: float = 1,
+        layer_name: str = "Circle Markers",
+        crs: str = "EPSG:4326",
+        zoom_to_layer: bool = False,
+        **kwargs,
+    ) -> Optional["QgsVectorLayer"]:
+        """Add circle markers from CSV or DataFrame point data.
+
+        Args:
+            data: Path to CSV file or pandas DataFrame.
+            x: Column name for x-coordinate (longitude). Defaults to "longitude".
+            y: Column name for y-coordinate (latitude). Defaults to "latitude".
+            radius: Circle radius in pixels (fixed) or column name for data-defined sizing.
+            color: Fill color as hex string, RGB tuple, or list of colors.
+            stroke_color: Stroke color as hex string or RGB tuple.
+            stroke_width: Stroke width in pixels.
+            layer_name: Name for the layer. Defaults to "Circle Markers".
+            crs: Coordinate reference system. Defaults to "EPSG:4326".
+            zoom_to_layer: Whether to zoom to layer extent. Defaults to False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            The created vector layer, or None if creation failed.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_circle_markers_from_xy(
+            ...     "cities.csv",
+            ...     x="lon",
+            ...     y="lat",
+            ...     radius=15,
+            ...     color="#ff0000"
+            ... )
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        try:
+            from . import common
+
+            # Parse point data
+            df, attr_columns = common.parse_point_data(data, x, y)
+
+            # Create memory layer
+            layer = QgsVectorLayer(f"Point?crs={crs}", layer_name, "memory")
+            provider = layer.dataProvider()
+
+            # Add attribute fields
+            fields = QgsFields()
+            for col in attr_columns:
+                fields.append(QgsField(col, 10))  # QVariant::String = 10
+
+            provider.addAttributes(fields.toList())
+            layer.updateFields()
+
+            # Add features
+            features = []
+            for idx, row in df.iterrows():
+                feat = QgsFeature(layer.fields())
+                point = QgsPointXY(float(row[x]), float(row[y]))
+                feat.setGeometry(QgsGeometry.fromPointXY(point))
+
+                # Set attributes
+                for col in attr_columns:
+                    feat.setAttribute(col, row[col])
+
+                features.append(feat)
+
+            provider.addFeatures(features)
+            layer.updateExtents()
+
+            # Apply circle marker styling
+            symbol = QgsMarkerSymbol.createSimple(
+                {
+                    "name": "circle",
+                    "color": (
+                        color if isinstance(color, str) else ",".join(map(str, color))
+                    ),
+                    "outline_color": stroke_color,
+                    "outline_width": str(stroke_width),
+                    "size": str(radius) if isinstance(radius, (int, float)) else "10",
+                }
+            )
+
+            # Handle data-defined sizing if radius is a column name
+            if isinstance(radius, str) and radius in attr_columns:
+                symbol.setDataDefinedProperty(
+                    QgsSymbol.PropertySize, QgsProperty.fromField(radius)
+                )
+
+            renderer = QgsSingleSymbolRenderer(symbol)
+            layer.setRenderer(renderer)
+
+            # Add to project
+            self.project.addMapLayer(layer, False)
+            root = self.project.layerTreeRoot()
+            root.addLayer(layer)
+
+            # Track layer
+            self._layers[layer_name] = layer
+
+            # Zoom if requested
+            if zoom_to_layer:
+                self.zoom_to_layer(layer_name)
+
+            # Refresh canvas
+            if self.canvas:
+                self.canvas.refresh()
+
+            return layer
+
+        except ImportError as e:
+            print(f"Missing dependency: {e}")
+            return None
+        except Exception as e:
+            print(f"Error adding circle markers: {e}")
+            return None
+
+    def add_points_from_xy(
+        self,
+        data: Union[str, Any],
+        x: str = "longitude",
+        y: str = "latitude",
+        layer_name: str = "Points",
+        crs: str = "EPSG:4326",
+        style: Optional[Dict] = None,
+        color_column: Optional[str] = None,
+        size_column: Optional[str] = None,
+        popup_fields: Optional[List[str]] = None,
+        zoom_to_layer: bool = False,
+        **kwargs,
+    ) -> Optional["QgsVectorLayer"]:
+        """Enhanced CSV point loading with data-driven styling and popups.
+
+        Args:
+            data: Path to CSV file or pandas DataFrame.
+            x: Column name for x-coordinate (longitude). Defaults to "longitude".
+            y: Column name for y-coordinate (latitude). Defaults to "latitude".
+            layer_name: Name for the layer. Defaults to "Points".
+            crs: Coordinate reference system. Defaults to "EPSG:4326".
+            style: Optional style dictionary with keys: color, stroke_color, stroke_width, opacity, symbol.
+            color_column: Column name for color-based categorization.
+            size_column: Column name for size-based scaling.
+            popup_fields: List of field names to include in popup. If None, includes all fields.
+            zoom_to_layer: Whether to zoom to layer extent. Defaults to False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            The created vector layer, or None if creation failed.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_points_from_xy(
+            ...     "cities.csv",
+            ...     x="lon",
+            ...     y="lat",
+            ...     color_column="category",
+            ...     size_column="population",
+            ...     popup_fields=["name", "population"]
+            ... )
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        try:
+            from . import common
+
+            # Parse point data
+            df, attr_columns = common.parse_point_data(data, x, y)
+
+            # Create memory layer
+            layer = QgsVectorLayer(f"Point?crs={crs}", layer_name, "memory")
+            provider = layer.dataProvider()
+
+            # Add attribute fields with proper types
+            fields = QgsFields()
+            for col in attr_columns:
+                # Infer field type from data
+                dtype = df[col].dtype
+                if dtype in ["int64", "int32"]:
+                    fields.append(QgsField(col, 2))  # QVariant::Int
+                elif dtype in ["float64", "float32"]:
+                    fields.append(QgsField(col, 6))  # QVariant::Double
+                else:
+                    fields.append(QgsField(col, 10))  # QVariant::String
+
+            provider.addAttributes(fields.toList())
+            layer.updateFields()
+
+            # Add features
+            features = []
+            for idx, row in df.iterrows():
+                feat = QgsFeature(layer.fields())
+                point = QgsPointXY(float(row[x]), float(row[y]))
+                feat.setGeometry(QgsGeometry.fromPointXY(point))
+
+                # Set attributes
+                for col in attr_columns:
+                    feat.setAttribute(col, row[col])
+
+                features.append(feat)
+
+            provider.addFeatures(features)
+            layer.updateExtents()
+
+            # Apply styling
+            if color_column and color_column in attr_columns:
+                # Use categorized renderer for color column
+                unique_values = df[color_column].unique()
+                categories = []
+                colors = [
+                    "#e41a1c",
+                    "#377eb8",
+                    "#4daf4a",
+                    "#984ea3",
+                    "#ff7f00",
+                    "#ffff33",
+                    "#a65628",
+                    "#f781bf",
+                ]
+
+                for i, value in enumerate(unique_values):
+                    color = colors[i % len(colors)]
+                    symbol = QgsSymbol.defaultSymbol(0)  # Point = 0
+                    symbol.setColor(self._parse_color(color))
+                    category = QgsRendererCategory(value, symbol, str(value))
+                    categories.append(category)
+
+                renderer = QgsCategorizedSymbolRenderer(color_column, categories)
+                layer.setRenderer(renderer)
+            elif style:
+                self._apply_vector_style(layer, style)
+
+            # Handle data-defined sizing
+            if size_column and size_column in attr_columns:
+                symbol = layer.renderer().symbol()
+                if symbol:
+                    symbol.setDataDefinedProperty(
+                        QgsSymbol.PropertySize, QgsProperty.fromField(size_column)
+                    )
+
+            # Set popup template
+            if popup_fields:
+                fields_to_show = [f for f in popup_fields if f in attr_columns]
+            else:
+                fields_to_show = attr_columns
+
+            popup_html = "<html><body>"
+            for field in fields_to_show:
+                popup_html += f'<p><b>{field}:</b> [% "{field}" %]</p>'
+            popup_html += "</body></html>"
+            layer.setMapTipTemplate(popup_html)
+
+            # Add to project
+            self.project.addMapLayer(layer, False)
+            root = self.project.layerTreeRoot()
+            root.addLayer(layer)
+
+            # Track layer
+            self._layers[layer_name] = layer
+
+            # Zoom if requested
+            if zoom_to_layer:
+                self.zoom_to_layer(layer_name)
+
+            # Refresh canvas
+            if self.canvas:
+                self.canvas.refresh()
+
+            return layer
+
+        except ImportError as e:
+            print(f"Missing dependency: {e}")
+            return None
+        except Exception as e:
+            print(f"Error adding points from XY: {e}")
+            return None
+
+    def add_heatmap(
+        self,
+        data: Union[str, Any],
+        latitude: str = "latitude",
+        longitude: str = "longitude",
+        value: Optional[str] = None,
+        layer_name: str = "Heatmap",
+        radius: int = 20,
+        weight_field: Optional[str] = None,
+        max_value: Optional[float] = None,
+        color_ramp: str = "YlOrRd",
+        zoom_to_layer: bool = False,
+        **kwargs,
+    ) -> Optional["QgsVectorLayer"]:
+        """Create a heatmap visualization from point data.
+
+        Args:
+            data: Path to CSV file or pandas DataFrame containing point data.
+            latitude: Column name for latitude values. Defaults to "latitude".
+            longitude: Column name for longitude values. Defaults to "longitude".
+            value: Optional column name for weighting values.
+            layer_name: Name for the layer. Defaults to "Heatmap".
+            radius: Heatmap radius in pixels. Defaults to 20.
+            weight_field: Field to use for weighting (overrides value). Defaults to None.
+            max_value: Maximum value for scaling. If None, uses data maximum.
+            color_ramp: Color ramp name. Defaults to "YlOrRd".
+            zoom_to_layer: Whether to zoom to layer extent. Defaults to False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            The created heatmap layer, or None if creation failed.
+
+        Example:
+            >>> m = Map()
+            >>> layer = m.add_heatmap(
+            ...     "cities.csv",
+            ...     latitude="lat",
+            ...     longitude="lon",
+            ...     value="population",
+            ...     radius=30,
+            ...     color_ramp="Reds"
+            ... )
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        try:
+            from . import common
+
+            # Parse point data
+            df, attr_columns = common.parse_point_data(data, longitude, latitude)
+
+            # Create memory layer
+            layer = QgsVectorLayer(f"Point?crs=EPSG:4326", layer_name, "memory")
+            provider = layer.dataProvider()
+
+            # Add attribute fields
+            fields = QgsFields()
+            for col in attr_columns:
+                # Infer field type
+                dtype = df[col].dtype
+                if dtype in ["int64", "int32", "float64", "float32"]:
+                    fields.append(QgsField(col, 6))  # QVariant::Double
+                else:
+                    fields.append(QgsField(col, 10))  # QVariant::String
+
+            provider.addAttributes(fields.toList())
+            layer.updateFields()
+
+            # Add features
+            features = []
+            for idx, row in df.iterrows():
+                feat = QgsFeature(layer.fields())
+                point = QgsPointXY(float(row[longitude]), float(row[latitude]))
+                feat.setGeometry(QgsGeometry.fromPointXY(point))
+
+                # Set attributes
+                for col in attr_columns:
+                    feat.setAttribute(col, row[col])
+
+                features.append(feat)
+
+            provider.addFeatures(features)
+            layer.updateExtents()
+
+            # Apply heatmap renderer
+            heatmap_renderer = QgsHeatmapRenderer()
+            heatmap_renderer.setRadius(radius)
+
+            # Set weight field if specified
+            if weight_field and weight_field in attr_columns:
+                heatmap_renderer.setWeightExpression(f'"{weight_field}"')
+            elif value and value in attr_columns:
+                heatmap_renderer.setWeightExpression(f'"{value}"')
+
+            # Set maximum value
+            if max_value:
+                heatmap_renderer.setMaximumValue(max_value)
+
+            # Set color ramp
+            try:
+                ramp = common.get_color_ramp(color_ramp)
+                heatmap_renderer.setColorRamp(ramp)
+            except Exception as e:
+                print(f"Could not set color ramp: {e}")
+
+            layer.setRenderer(heatmap_renderer)
+
+            # Add to project
+            self.project.addMapLayer(layer, False)
+            root = self.project.layerTreeRoot()
+            root.addLayer(layer)
+
+            # Track layer
+            self._layers[layer_name] = layer
+
+            # Zoom if requested
+            if zoom_to_layer:
+                self.zoom_to_layer(layer_name)
+
+            # Refresh canvas
+            if self.canvas:
+                self.canvas.refresh()
+
+            return layer
+
+        except ImportError as e:
+            print(f"Missing dependency: {e}")
+            return None
+        except Exception as e:
+            print(f"Error adding heatmap: {e}")
+            return None
+
+    def add_styled_vector(
+        self,
+        source: Union[str, Any],
+        layer_name: Optional[str] = None,
+        column: Optional[str] = None,
+        scheme: str = "Quantiles",
+        k: int = 5,
+        color_ramp: str = "Spectral",
+        legend: bool = True,
+        legend_title: Optional[str] = None,
+        zoom_to_layer: bool = False,
+        **kwargs,
+    ) -> Optional["QgsVectorLayer"]:
+        """Add vector layer with automatic data-driven classification and legend.
+
+        Args:
+            source: File path or GeoDataFrame.
+            layer_name: Name for the layer. If None, auto-generated.
+            column: Column name for classification. If None, uses simple styling.
+            scheme: Classification scheme: "Quantiles", "EqualInterval", "NaturalBreaks", "StandardDeviation".
+            k: Number of classes. Defaults to 5.
+            color_ramp: Color ramp name. Defaults to "Spectral".
+            legend: Whether to auto-generate legend. Defaults to True.
+            legend_title: Title for legend. If None, uses column name.
+            zoom_to_layer: Whether to zoom to layer extent. Defaults to False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            The created vector layer, or None if creation failed.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_styled_vector(
+            ...     "states.shp",
+            ...     column="population",
+            ...     scheme="Quantiles",
+            ...     k=5,
+            ...     color_ramp="YlOrRd",
+            ...     legend=True
+            ... )
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        try:
+            # Load vector layer
+            if hasattr(source, "to_file"):  # GeoDataFrame
+                layer = self.add_gdf(
+                    source, layer_name=layer_name, zoom_to_layer=False, **kwargs
+                )
+            else:
+                layer = self.add_vector(
+                    source, layer_name=layer_name, zoom_to_layer=False, **kwargs
+                )
+
+            if layer is None or column is None:
+                return layer
+
+            # Get classification method
+            classification_methods = {
+                "Quantiles": QgsClassificationQuantile,
+                "EqualInterval": QgsClassificationEqualInterval,
+                "NaturalBreaks": QgsClassificationJenks,
+                "Jenks": QgsClassificationJenks,
+                "StandardDeviation": QgsClassificationStandardDeviation,
+            }
+
+            classification_class = classification_methods.get(
+                scheme, QgsClassificationQuantile
+            )
+            classification_method = classification_class()
+
+            # Get color ramp
+            from . import common
+
+            ramp = common.get_color_ramp(color_ramp, n_colors=k)
+
+            # Create graduated renderer
+            renderer = QgsGraduatedSymbolRenderer()
+            renderer.setClassAttribute(column)
+            renderer.setSourceColorRamp(ramp)
+
+            # Calculate classes
+            renderer.updateClasses(layer, classification_method, k)
+
+            # Apply renderer
+            layer.setRenderer(renderer)
+            layer.triggerRepaint()
+
+            # Generate legend if requested
+            if legend:
+                legend_dict = {}
+                for i, range_obj in enumerate(renderer.ranges()):
+                    label = range_obj.label()
+                    color = range_obj.symbol().color()
+                    # Convert QColor to hex
+                    hex_color = (
+                        f"#{color.red():02x}{color.green():02x}{color.blue():02x}"
+                    )
+                    legend_dict[label] = hex_color
+
+                title = legend_title if legend_title else column
+                self.add_legend(title=title, legend_dict=legend_dict)
+
+            # Zoom if requested
+            if zoom_to_layer:
+                self.zoom_to_layer(layer.name() if layer_name is None else layer_name)
+
+            # Refresh canvas
+            if self.canvas:
+                self.canvas.refresh()
+
+            return layer
+
+        except Exception as e:
+            print(f"Error adding styled vector: {e}")
+            return None
+
+    def add_stac_layer(
+        self,
+        url: Optional[str] = None,
+        item: Optional[Dict] = None,
+        assets: Optional[Union[str, List[str]]] = None,
+        layer_name: Optional[str] = None,
+        zoom_to_layer: bool = True,
+        **kwargs,
+    ) -> Optional["QgsRasterLayer"]:
+        """Load STAC item as COG layer.
+
+        Args:
+            url: URL to STAC item JSON.
+            item: STAC item dictionary (if not providing URL).
+            assets: Asset name(s) to load. If None, uses first visual/data asset.
+            layer_name: Name for the layer. If None, uses item ID.
+            zoom_to_layer: Whether to zoom to layer extent. Defaults to True.
+            **kwargs: Additional keyword arguments passed to add_cog.
+
+        Returns:
+            The created raster layer, or None if creation failed.
+
+        Example:
+            >>> m = Map()
+            >>> m.add_stac_layer(
+            ...     url="https://example.com/item.json",
+            ...     assets="visual"
+            ... )
+        """
+        if not HAS_QGIS:
+            print("QGIS libraries not available")
+            return None
+
+        try:
+            # Fetch STAC item if URL provided
+            if url and not item:
+                if not HAS_REQUESTS:
+                    print("requests library required for fetching STAC items from URL")
+                    return None
+
+                response = requests.get(url)
+                response.raise_for_status()
+                item = response.json()
+
+            if not item:
+                print("No STAC item provided (url or item required)")
+                return None
+
+            # Extract assets
+            item_assets = item.get("assets", {})
+            if not item_assets:
+                print("No assets found in STAC item")
+                return None
+
+            # Select asset(s) to load
+            if assets:
+                if isinstance(assets, str):
+                    asset_names = [assets]
+                else:
+                    asset_names = assets
+            else:
+                # Auto-select first visual or data asset
+                visual_assets = ["visual", "rendered_preview", "thumbnail", "overview"]
+                data_assets = ["data", "cog", "image"]
+
+                asset_names = []
+                for name in visual_assets + data_assets:
+                    if name in item_assets:
+                        asset_names = [name]
+                        break
+
+                if not asset_names:
+                    # Just use first asset
+                    asset_names = [list(item_assets.keys())[0]]
+
+            # Load first asset as COG
+            asset_name = asset_names[0]
+            if asset_name not in item_assets:
+                print(
+                    f"Asset '{asset_name}' not found. Available: {list(item_assets.keys())}"
+                )
+                return None
+
+            asset = item_assets[asset_name]
+            cog_url = asset.get("href")
+
+            if not cog_url:
+                print(f"No href found for asset '{asset_name}'")
+                return None
+
+            # Generate layer name
+            if layer_name is None:
+                layer_name = f"{item.get('id', 'STAC')}_{asset_name}"
+
+            # Load as COG
+            layer = self.add_cog(
+                cog_url, layer_name=layer_name, zoom_to_layer=zoom_to_layer, **kwargs
+            )
+
+            return layer
+
+        except ImportError as e:
+            print(f"Missing dependency: {e}")
+            return None
+        except Exception as e:
+            print(f"Error adding STAC layer: {e}")
+            return None
 
     def __repr__(self) -> str:
         """Return a string representation of the Map.
